@@ -4,14 +4,15 @@ const passport = require("passport");
 
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
+
 const bcrypt = require('bcrypt');
 
-const dotenv = require("dotenv").config();
+// const dotenv = require("dotenv").config();
 const User = require("./models/User");
 
 const params = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: process.env.SECRET,
+    secretOrKey: "kovakoodattuaroskaa",
 };
 
 passport.use(
