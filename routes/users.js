@@ -21,11 +21,11 @@ const upload = multer({ storage });
 
 const User = require("../models/User");
 
+const passport_auth = require("../passport-config");
+
 let users = [];
 const mongodb_url = "mongodb://127.0.0.1:27017/testdb";
 
-// created with bing.com copilot as I am lazy:
-const characters = ['~', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '+', '=', '{', '}', '[', ']', '|', '\\', ';', ':', '"', '<', '>', ',', '.', '/'];
 
 fs.readFile("./data/users.json", "utf-8", (err, data) => {
     if (err) {
@@ -36,7 +36,7 @@ fs.readFile("./data/users.json", "utf-8", (err, data) => {
     console.log("Loaded data\n", users);
 });
 
-router.get("/private", validateToken, (req, res, next) => {
+router.get("/private", passport_auth.authenticate("jwt", { session: false }), (req, res, next) => {
     res.status(200).json({ email: req.body.email });
 });
 
@@ -56,19 +56,23 @@ router.post("/login", upload.none(), async (req, res, next) => {
             return res.status(403).json({ email: "Could not find user" });
         }
         const is_og = await bcrypt.compare(req.body.password, found_user.password);
-
+        console.log(is_og);
         if (is_og) {
             const payload = {
                 id: found_user._id,
                 email: req.body.email
             }
-            const token = jwt.sign(payload, process.env.SECRET);
-            if (token) {
+            jwt.sign(payload, process.env.SECRET, (err, token) => {
+
+                if (err) {
+                    return res.status(400).json({ success: false });
+                }
+
                 return res.status(200).json({ success: true, token });
-            }
+
+            });
 
         }
-        return res.status(401).json({ success: false });
     } catch (err) {
         console.error("Error while login:", err);
         res.status(500).send("Internal Server Error");
