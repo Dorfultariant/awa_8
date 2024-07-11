@@ -31,18 +31,12 @@ router.get("/private", validateToken, (req, res, next) => {
     return res.status(200).json({ email: req.user.email });
 });
 
-
-router.get("/login", (req, res) => {
-    res.render("login");
-});
-
-
 router.post("/todos", validateToken, async (req, res, next) => {
     console.log("Req body: ", req.body);
     console.log("Req user: ", req.user);
 
     try {
-        const found_user_todo = await Todo.find((todo) => todo.user === req.user._id);
+        const found_user_todo = await Todo.findOne({ user: req.user._id });
         if (found_user_todo) {
             found_user_todo.items.push(req.body.items);
             await found_user_todo.save();
@@ -56,9 +50,16 @@ router.post("/todos", validateToken, async (req, res, next) => {
             return res.status(200).send("Items added");
         }
     } catch (err) {
-        return res.status(500).send("Internal server error: ", err);
+        console.log("Error:", err);
+        return res.status(500).send("Internal server error: ");
     }
 });
+
+
+router.get("/login", (req, res) => {
+    res.render("login");
+});
+
 
 router.post("/login", async (req, res, next) => {
     try {

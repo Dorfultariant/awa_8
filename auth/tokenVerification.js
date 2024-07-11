@@ -15,7 +15,7 @@ function authorization(req, res, next) {
     jwt.verify(token, "Kovakoodattuakoskacodegrade", (err, user) => {
         console.log("Verification check");
         if (err) {
-            return res.status(403).send("Invalid token");
+            return res.status(401).send("Invalid token");
         }
         req.user = user;
         next();
