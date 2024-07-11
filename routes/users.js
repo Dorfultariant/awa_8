@@ -37,9 +37,12 @@ fs.readFile("./data/users.json", "utf-8", (err, data) => {
     console.log("Loaded data\n", users);
 });
 
-router.get("/private", passport_auth.authenticate("jwt", { session: false }), (req, res, next) => {
-    res.status(200).json({ email: req.body.email });
+router.get("/private", (req, res, next) => {
+    if (validateToken(req, res, next)) {
+        return res.status(200).json({ email: req.body.email });
+    }
 });
+
 
 router.get("/login", (req, res) => {
     res.render("login");
@@ -73,7 +76,7 @@ router.post("/login", async (req, res, next) => {
                     return res.status(400).json({ msg: err });
                 }
 
-                return res.status(200).json({ success: true, accessToken: token });
+                return res.status(200).json({ success: true, payload: req.body.email, token: token });
 
             });
 
