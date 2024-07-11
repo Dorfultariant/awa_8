@@ -46,7 +46,8 @@ router.post("/login", async (req, res, next) => {
         if (found_user.length === 0) {
             return res.status(403).json({ email: "Could not find user" });
         }
-        const is_og = bcrypt.compare(req.body.password, found_user.password);
+        // Even though language server complains, there needs to be await, otherwise the pw check passes with false credentials
+        const is_og = await bcrypt.compare(req.body.password, found_user.password);
         console.log(is_og);
         if (is_og) {
 
@@ -59,14 +60,16 @@ router.post("/login", async (req, res, next) => {
             jwt.sign(payload, "Kovakoodattuakoskacodegrade", (err, token) => {
                 console.log("Signed token: ", token);
                 if (err) {
+                    console.log("Error:", err);
                     return res.status(400).json({ msg: err });
                 }
 
-                return res.status(200).json({ success: true, token: "Bearer" + token });
-
+                return res.status(200).json({ success: true, token: "Bearer " + token });
             });
+        } else {
+
+            return res.status(400).json({ password: "Password incorrect" });
         }
-        return res.status(400).json({ password: "Password incorrect" });
 
     } catch (err) {
         console.error("Error while login:", err);
