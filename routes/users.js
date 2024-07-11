@@ -36,15 +36,16 @@ router.post("/todos", validateToken, async (req, res, next) => {
     console.log("Req user: ", req.user);
 
     try {
-        const found_user_todo = await Todo.findOne({ user: req.user._id });
+        const found_user_todo = await Todo.findOne({ user: req.user.id });
         if (found_user_todo) {
-            found_user_todo.items.push(req.body.items);
+            // Feels like javascript is just hack on top of hack, ... to spread array of items individually to existing array.....
+            found_user_todo.items.push(...req.body.items);
             await found_user_todo.save();
             return res.status(200).send("Items added");
 
         } else {
             await Todo.create({
-                user: req.user._id,
+                user: req.user.id,
                 items: req.body.items
             });
             return res.status(200).send("Items added");
