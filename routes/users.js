@@ -76,7 +76,7 @@ router.post("/login", async (req, res, next) => {
                     return res.status(400).json({ msg: err });
                 }
 
-                return res.status(200).json({ success: true, payload: req.body.email, token: token });
+                return res.status(200).json({ success: true, token: token });
 
             });
 
