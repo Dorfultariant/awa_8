@@ -25,7 +25,8 @@ const passport_auth = require("../passport-config");
 
 
 
-router.get("/private", passport.authenticate("jwt", { session: false }), (req, res, next) => {
+router.get("/private", validateToken, (req, res, next) => {
+    // validateToken(req, res, next);
     return res.status(200).json({ email: req.body.email });
 });
 
