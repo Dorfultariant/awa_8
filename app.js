@@ -13,6 +13,7 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
 app.use(express.static("public"));
+// needs to be added, so req.body can be parsed properly, this has taken too much debugging hours already
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
