@@ -9,7 +9,6 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
-const fs = require("fs");
 const { body, validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv").config();
@@ -24,23 +23,10 @@ const User = require("../models/User");
 const passport = require("passport");
 const passport_auth = require("../passport-config");
 
-let users = [];
-const mongodb_url = "mongodb://127.0.0.1:27017/testdb";
 
 
-fs.readFile("./data/users.json", "utf-8", (err, data) => {
-    if (err) {
-        console.error("Something wrong with db:", err);
-        return;
-    }
-    users = JSON.parse(data);
-    console.log("Loaded data\n", users);
-});
-
-router.get("/private", (req, res, next) => {
-    if (validateToken(req, res, next)) {
-        return res.status(200).json({ email: req.body.email });
-    }
+router.get("/private", passport.authenticate("jwt", { session: false }), (req, res, next) => {
+    return res.status(200).json({ email: req.body.email });
 });
 
 
@@ -76,11 +62,12 @@ router.post("/login", async (req, res, next) => {
                     return res.status(400).json({ msg: err });
                 }
 
-                return res.status(200).json({ success: true, token: token });
+                return res.status(200).json({ success: true, token: "Bearer" + token });
 
             });
-
         }
+        return res.status(400).json({ password: "Password incorrect" });
+
     } catch (err) {
         console.error("Error while login:", err);
         res.status(500).send("Internal Server Error");
