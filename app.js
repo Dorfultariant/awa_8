@@ -1,13 +1,14 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const passport = require("./passport-config");
 
 const mongoose = require("mongoose");
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
 
 const app = express();
 
@@ -36,9 +37,17 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use((req, res, next) => {
+    console.log("Logging information:");
+    console.log("Body: ", req.body);
+    next();
+});
+
 app.use('/', indexRouter);
 app.use("/api", usersRouter);
 app.use('/api/user', usersRouter);
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

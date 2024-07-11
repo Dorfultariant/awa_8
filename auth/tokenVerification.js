@@ -3,6 +3,7 @@ const dotenv = require("dotenv").config();
 
 function authorization(req, res, next) {
     const auth_head = req.headers["authorization"];
+
     console.log("Headers: ", req.headers);
     if (!auth_head) {
         console.log("Authorization head: ", auth_head);

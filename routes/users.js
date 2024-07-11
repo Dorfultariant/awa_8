@@ -21,6 +21,7 @@ const upload = multer({ storage });
 
 const User = require("../models/User");
 
+const passport = require("passport");
 const passport_auth = require("../passport-config");
 
 let users = [];
@@ -45,7 +46,8 @@ router.get("/login", (req, res) => {
 });
 
 
-router.post("/login", upload.none(), async (req, res, next) => {
+
+router.post("/login", async (req, res, next) => {
     try {
         const found_user = await User.findOne({ email: req.body.email });
         if (found_user === null) {
@@ -55,20 +57,23 @@ router.post("/login", upload.none(), async (req, res, next) => {
         if (found_user.length === 0) {
             return res.status(403).json({ email: "Could not find user" });
         }
-        const is_og = await bcrypt.compare(req.body.password, found_user.password);
+        const is_og = bcrypt.compare(req.body.password, found_user.password);
         console.log(is_og);
         if (is_og) {
+
             const payload = {
                 id: found_user._id,
                 email: req.body.email
             }
-            jwt.sign(payload, process.env.SECRET, (err, token) => {
 
+            console.log("Payload: ", payload);
+            jwt.sign(payload, process.env.SECRET, (err, token) => {
+                console.log("Signed token: ", token);
                 if (err) {
-                    return res.status(400).json({ success: false });
+                    return res.status(400).json({ msg: err });
                 }
 
-                return res.status(200).json({ success: true, token });
+                return res.status(200).json({ success: true, accessToken: token });
 
             });
 
