@@ -67,7 +67,7 @@ router.post("/login", async (req, res, next) => {
             }
 
             console.log("Payload: ", payload);
-            jwt.sign(payload, process.env.SECRET, (err, token) => {
+            jwt.sign(payload, "Kovakoodattuakoskacodegrade", (err, token) => {
                 console.log("Signed token: ", token);
                 if (err) {
                     return res.status(400).json({ msg: err });

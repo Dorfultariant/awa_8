@@ -10,7 +10,7 @@ function authorization(req, res, next) {
         return res.sendStatus(401);
     }
     const token = auth_head.split(" ")[1];
-    jwt.verify(token, process.env.SECRET, (err, user) => {
+    jwt.verify(token, "Kovakoodattuakoskacodegrade", (err, user) => {
         console.log("Verification check");
         if (err) {
             return res.status(403);

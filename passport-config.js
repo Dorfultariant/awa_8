@@ -12,7 +12,7 @@ const User = require("./models/User");
 
 const params = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: process.env.SECRET,
+    secretOrKey: "Kovakoodattuakoskacodegrade",
 };
 
 passport.use(
